@@ -1,10 +1,7 @@
 import React from 'react';
-import { Source } from './core/sources';
-import { VideoSource } from './core/sources/VideoSource';
-import { FileUpload } from './components/FileUpload/FileUpload';
-import { SourceList } from './components/Source/SourceList';
-import { Sequence } from './components/Sequence/Sequence';
-import { Aside, Main } from './components/Layout/Layout';
+import {Source} from './core/sources';
+import {VideoSource} from './core/sources/VideoSource';
+import {Panel} from "./components/Panel/Panel";
 
 export const App: React.FC = () => {
     const [sources, setSources] = React.useState<Source[]>([]);
@@ -23,13 +20,15 @@ export const App: React.FC = () => {
 
     return (
         <>
-            <Aside>
-                <FileUpload onAdd={handleAdd} />
-                <SourceList sources={sources} onClick={handleClick} />
-            </Aside>
-            <Main>
-                <Sequence fragments={fragments} />
-            </Main>
+            <Panel style={{gridArea: "aside"}} header="Sources">
+                Content
+            </Panel>
+            <Panel style={{gridArea: "main"}} header="Preview">
+                main
+            </Panel>
+            <Panel style={{gridArea: "footer"}} header="Timeline">
+                footer
+            </Panel>
         </>
     )
 }

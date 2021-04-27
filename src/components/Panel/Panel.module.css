@@ -1,0 +1,22 @@
+.panel {
+    background: var(--main-panel);
+    border: 1px solid var(--main-border);
+    border-radius: 5px;
+
+    display: grid;
+    grid-template: 1.2rem 1fr minmax(1.2rem, auto) / 1fr;
+}
+
+.header {
+    border-bottom: 1px solid var(--main-border);
+    padding: 0.05rem 0.5rem;
+}
+
+.content {
+    padding: 0.5rem;
+}
+
+.footer {
+    border-top: 1px solid var(--main-border);
+    padding: 0.05rem 0.5rem;
+}

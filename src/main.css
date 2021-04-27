@@ -1,0 +1,31 @@
+:root {
+    --main-background: #2B2B2BFF;
+    --main-border: #555555FF;
+    --main-panel: #313335FF;
+    --main-color: #595C4FFF;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    font-size: 16px;
+}
+
+body > div {
+    min-height: 100%;
+    box-sizing: border-box;
+
+    background: var(--main-background);
+    color: var(--main-color);
+    padding: 0.5rem;
+
+    display: grid;
+    grid-template: "aside main" 1fr
+            "footer footer" 250px
+            / 250px 1fr;
+    gap: 0.5rem;
+}
