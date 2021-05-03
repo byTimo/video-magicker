@@ -1,5 +1,4 @@
-import { Source } from "../sources";
-import { getBoundedValue } from '../utils';
+import {getBoundedValue} from '../utils';
 import {ColorSource} from "../sources/ColorSource";
 
 export class Fragment {
@@ -28,6 +27,10 @@ export class Fragment {
 
     public set to(value: number) {
         this._to = getBoundedValue(value, this.maxDuration ?? Infinity, this.from);
+    }
+
+    public get duration(): number {
+        return this._to - this._from;
     }
 
     public seek(value: number) {

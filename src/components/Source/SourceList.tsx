@@ -1,18 +1,14 @@
 import React from 'react';
-import { Source } from '../../core/sources/index';
+import {Source} from "../../core/sources/Source";
+import styles from "./SourceList.module.css";
 
 export interface SourceListItemProps {
     source: Source;
-    onClick: (source: Source) => void;
 }
 
 export const SourceListItem: React.FC<SourceListItemProps> = props => {
     return (
-        <li title={props.source.filename}>
-            <button onClick={() => props.onClick(props.source)}>
-                {props.source.filename}
-            </button>
-        </li>
+        <li title={props.source.name} className={styles.li}>{props.source.name}</li>
     )
 }
 
@@ -24,8 +20,8 @@ export interface SourceListProps {
 
 export const SourceList: React.FC<SourceListProps> = props => {
     return (
-        <ul>
-            {props.sources.map(x => <SourceListItem key={x.source.src} source={x} onClick={props.onClick}/>)}
+        <ul className={styles.ul}>
+            {props.sources.map(x => <SourceListItem key={x.id} source={x}/>)}
         </ul>
     )
 }

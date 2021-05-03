@@ -1,3 +1,1 @@
-import { VideoSource } from "./VideoSource";
-
-export type Source = VideoSource;
+import {VideoSource} from "./VideoSource";

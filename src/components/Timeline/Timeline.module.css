@@ -1,0 +1,15 @@
+.line {
+    display: flex;
+
+    height: 35px;
+
+    overflow-x: auto;
+
+    border: 1px solid var(--main-border);
+    background: var(--main-background);
+}
+
+.item {
+    border: 1px solid var(--main-border);
+    background: magenta;
+}

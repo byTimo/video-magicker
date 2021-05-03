@@ -10,13 +10,17 @@
 .header {
     border-bottom: 1px solid var(--main-border);
     padding: 0.05rem 0.5rem;
+
+    min-width: 0;
 }
 
 .content {
     padding: 0.5rem;
+    min-width: 0;
 }
 
 .footer {
     border-top: 1px solid var(--main-border);
     padding: 0.05rem 0.5rem;
+    min-width: 0;
 }

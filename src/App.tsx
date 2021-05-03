@@ -1,34 +1,34 @@
 import React from 'react';
-import {Source} from './core/sources';
 import {VideoSource} from './core/sources/VideoSource';
 import {Panel} from "./components/Panel/Panel";
+import {SourceList} from "./components/Source/SourceList";
+import {ColorSource} from "./core/sources/ColorSource";
+import {Timeline} from "./components/Timeline/Timeline";
+import {Fragment} from "./core/renderer/Fragment";
+import {RenderContextProvider} from "./RenderContext";
+import {Preview} from "./components/Preview";
+
+const hardcodeSources = [
+    new ColorSource("red", 255, 0, 0),
+    new ColorSource("green", 0, 255, 0),
+    new ColorSource("blue", 0, 0, 255),
+];
+
+const hardcodeFragments = hardcodeSources.map(x => new Fragment(x));
 
 export const App: React.FC = () => {
-    const [sources, setSources] = React.useState<Source[]>([]);
-    const [fragments, setFragments] = React.useState<Source[]>([]);
-
-    const handleAdd = (files: File[]) => {
-        setSources(prev => {
-            const sources = files.map(x => new VideoSource(x));
-            return [...prev, ...sources];
-        })
-    }
-
-    const handleClick = (source: Source) => {
-        setFragments(prev => [...prev, source])
-    }
-
     return (
-        <>
+        <RenderContextProvider>
             <Panel style={{gridArea: "aside"}} header="Sources">
-                Content
+                <SourceList sources={hardcodeSources} onClick={() => {
+                }}/>
             </Panel>
             <Panel style={{gridArea: "main"}} header="Preview">
-                main
+                <Preview/>
             </Panel>
             <Panel style={{gridArea: "footer"}} header="Timeline">
-                footer
+                <Timeline fragments={hardcodeFragments}/>
             </Panel>
-        </>
+        </RenderContextProvider>
     )
 }

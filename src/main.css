@@ -2,7 +2,8 @@
     --main-background: #2B2B2BFF;
     --main-border: #555555FF;
     --main-panel: #313335FF;
-    --main-color: #595C4FFF;
+    --main-color: white;
+    --font-background-color: #595C4FFF;
 }
 
 html, body {
