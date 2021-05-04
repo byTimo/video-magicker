@@ -1,8 +1,10 @@
 .line {
     display: flex;
+    position: relative;
 
     height: 35px;
 
+    overflow-y: hidden;
     overflow-x: auto;
 
     border: 1px solid var(--main-border);
@@ -12,4 +14,12 @@
 .item {
     border: 1px solid var(--main-border);
     background: magenta;
+}
+
+.pointer {
+    width: 1px;
+    height: 35px;
+    background: yellow;
+
+    position: absolute;
 }

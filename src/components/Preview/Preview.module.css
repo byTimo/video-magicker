@@ -1,0 +1,21 @@
+.preview {
+    display: grid;
+    grid-template: "canvas" 1fr
+                "buttons" auto / auto;
+    height: 100%;
+}
+
+.canvas {
+    grid-area: canvas;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttons {
+    grid-area: buttons;
+
+    display: flex;
+    justify-content: center;
+}

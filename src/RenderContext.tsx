@@ -28,7 +28,7 @@ export const RenderContextProvider: React.FC = props => {
         renderer,
         bindContext: gl => {
             const renderer = new Renderer(gl);
-            hardcodeFragments.forEach(renderer.sequence.add);
+            hardcodeFragments.forEach(renderer.addFragment);
             setRenderer(renderer);
             renderer.startRender();
         },

@@ -40,7 +40,7 @@ export class Sequence {
         }
         let direction: "next" | "prev" = time - this.activeTime > 0 ? "next" : "prev";
         for (let current = this.activeNode; current != null; current = current[direction]!) {
-            if (current.to > time) {
+            if (current.from <= time && current.to > time) {
                 this.activeNode = current;
                 this.activeTime = time;
                 return true;
@@ -61,14 +61,9 @@ export class Sequence {
         this.activeNode?.fragment.source.draw(gl, local);
     }
 
-    public reset = (): void => {
-        this.activeNode = null;
-        this.activeTime = 0;
-    }
-
     private researchActiveNode = (time: number): SequenceNode | null => {
         for (let current = this.front; current != null; current = current!.next) {
-            if (current.to > time) {
+            if (current.from <= time && current.to > time) {
                 return current;
             }
         }

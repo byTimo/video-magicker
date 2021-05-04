@@ -1,12 +1,11 @@
 import React from 'react';
-import {VideoSource} from './core/sources/VideoSource';
 import {Panel} from "./components/Panel/Panel";
 import {SourceList} from "./components/Source/SourceList";
 import {ColorSource} from "./core/sources/ColorSource";
 import {Timeline} from "./components/Timeline/Timeline";
 import {Fragment} from "./core/renderer/Fragment";
 import {RenderContextProvider} from "./RenderContext";
-import {Preview} from "./components/Preview";
+import {Preview} from "./components/Preview/Preview";
 
 const hardcodeSources = [
     new ColorSource("red", 255, 0, 0),
