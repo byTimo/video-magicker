@@ -1,16 +1,16 @@
 import {getBoundedValue} from '../utils';
-import {ColorSource} from "../sources/ColorSource";
+import {Source} from "../sources/Source";
 
 export class Fragment {
     private _from: number;
     private _to: number;
     private maxDuration: number | null;
 
-    constructor(public readonly source: ColorSource) {
+    constructor(public readonly source: Source, from?: number, to?: number) {
         // this.maxDuration = "duration" in source ? source.duration : null;
         this.maxDuration = null;
-        this._from = 0;
-        this._to = this.maxDuration ?? 5 * 1000; //ms
+        this._from = from ?? 0;
+        this._to = to ?? this.maxDuration ?? 5 * 1000; //ms
     }
 
     public get from(): number {
@@ -31,10 +31,5 @@ export class Fragment {
 
     public get duration(): number {
         return this._to - this._from;
-    }
-
-    public seek(value: number) {
-        value = getBoundedValue(value, this.to, this.from);
-        this.source.seek(value);
     }
 }

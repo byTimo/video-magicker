@@ -1,62 +1,46 @@
 import {Sequence} from "./Sequence";
 import {Fragment} from "./Fragment";
 
-export type Event = "fragments" | "time";
-export type Listener = (event: Event) => void;
+export type RendererEvent = "fragmentsChanged" | "timestampChanged";
+export type Listener = (event: RendererEvent) => void;
 
 export class Renderer {
     public readonly sequence = new Sequence();
-    public current: number = 0;
+    public timestamp: number = 0;
 
-    private listeners: Array<Listener> = [];
-    private renderTimerId: number | null = null;
-    private playTimerId: number | null = null;
-
-    constructor(private gl: WebGL2RenderingContext) {
+    private listeners: Record<RendererEvent, Listener[]> = {
+        timestampChanged: [],
+        fragmentsChanged: [],
     }
 
-    public addEventListener = (callback: () => void): () => void => {
-        this.listeners.push(callback);
-        return () => this.listeners.filter(x => x !== callback);
+    private playTimerId: number | null = null;
+
+    constructor(private gl?: WebGL2RenderingContext) {
+    }
+
+    public addEventListener = (event: RendererEvent, callback: () => void): () => void => {
+        this.listeners[event].push(callback);
+        return () => this.listeners[event].filter(x => x !== callback);
     }
 
     public addFragment = (fragment: Fragment): void => {
         this.sequence.add(fragment);
-        this.emit("fragments");
-    }
-
-    public startRender = (): void => {
-        if (this.renderTimerId == null) {
-            const callback = () => {
-                this.sequence.draw(this.gl);
-                this.renderTimerId = requestAnimationFrame(callback);
-            }
-            callback();
-        }
-    }
-
-    public stopRender = (): void => {
-        if (this.renderTimerId != null) {
-            cancelAnimationFrame(this.renderTimerId);
-            this.renderTimerId = null;
-        }
+        this.emit("fragmentsChanged");
     }
 
     public play = () => {
         if (this.playTimerId != null) {
             return;
         }
-
-        const startTime = this.current;
-        const startTimestamp = performance.now();
+        let prevTimestamp = -1;
         const callback = (timestamp: number) => {
-            const diff = timestamp - startTimestamp;
-            const success = this.setTime(startTime + diff);
-            if (success) {
+            const nextTimestamp = prevTimestamp === -1 ? this.timestamp : this.timestamp - prevTimestamp + timestamp;
+            prevTimestamp = timestamp;
+            if (this.setTime(nextTimestamp)) {
                 this.playTimerId = requestAnimationFrame(callback)
             }
         }
-        callback(startTimestamp);
+        requestAnimationFrame(callback);
     }
 
     public pause = () => {
@@ -66,14 +50,23 @@ export class Renderer {
         }
     }
 
-    public setTime = (time: number): boolean => {
-        this.current = time;
-        const success = this.sequence.setTime(time);
-        this.emit("time");
+    public setTime = (timestamp: number): boolean => {
+        let success = false;
+        if (this.gl != null) {
+            success = this.sequence.draw(this.gl, timestamp);
+        } else {
+            console.warn("WebGl context isn't bound");
+        }
+        this.timestamp = timestamp;
+        this.emit("timestampChanged");
         return success;
     }
 
-    private emit = (event: Event): void => {
-        this.listeners.forEach(x => x(event));
+    public bindContext = (gl: WebGL2RenderingContext): void => {
+        this.gl = gl;
+    }
+
+    private emit = (event: RendererEvent): void => {
+        this.listeners[event].forEach(x => x(event));
     }
 }

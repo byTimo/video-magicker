@@ -1,41 +1,31 @@
 import React from "react";
 import styles from "./Timeline.module.css";
-import {Fragment} from "../../core/renderer/Fragment";
-import {RenderContext} from "../../RenderContext";
-
-function useRenderer() {
-    const {renderer} = React.useContext(RenderContext);
-    const [, setTime] = React.useState(Date.now());
-
-    React.useEffect(() => {
-        if (renderer != null) {
-            return renderer.addEventListener(() => setTime(Date.now()));
-        }
-    }, [renderer]);
-
-    return renderer;
-}
+import {Fragment} from "../../../core/renderer/Fragment";
+import {Renderer} from "../../../core/renderer/Renderer";
+import {useRendererEvent} from "../../../hooks/useRenderer";
 
 export interface TimelineProps {
-    fragments: Fragment[];
+    renderer: Renderer;
 }
 
 export const Timeline: React.FC<TimelineProps> = props => {
-    const renderer = useRenderer();
+    useRendererEvent(props.renderer, "fragmentsChanged");
+    useRendererEvent(props.renderer, "timestampChanged");
     const [scale, setScale] = React.useState(10);
-    const left = (renderer?.current ?? 0) / scale;
+
+    const left = props.renderer.timestamp / scale;
     const lineRef = React.useRef<HTMLDivElement>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
         const rect = event.currentTarget.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const time = x * scale;
-        renderer?.setTime(time);
+        props.renderer.setTime(time);
     }
 
     return (
         <div ref={lineRef} className={styles.line} onClick={handleClick}>
-            {props.fragments.map((x, i) => <TimelineItem key={i} fragment={x} scale={scale}/>)}
+            {props.renderer.sequence.map((x, i) => <TimelineItem key={i} fragment={x.fragment} scale={scale}/>)}
             <div className={styles.pointer} style={{left}}/>
         </div>
     )

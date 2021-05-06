@@ -1,10 +1,13 @@
 import React from "react";
-import {RenderContext} from "../../RenderContext";
 import styles from "./Preview.module.css";
+import {Renderer} from "../../../core/renderer/Renderer";
 
-export const Preview: React.FC = () => {
+export interface PreviewProps {
+    renderer: Renderer;
+}
+
+export const Preview: React.FC<PreviewProps> = props => {
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
-    const {bindContext, renderer} = React.useContext(RenderContext);
 
     React.useLayoutEffect(() => {
         if (canvasRef.current == null) {
@@ -17,8 +20,8 @@ export const Preview: React.FC = () => {
             console.error("Can't get webgl2 context in preview");
             return;
         }
-        bindContext(gl);
-    }, [])
+        props.renderer.bindContext(gl);
+    }, [props.renderer]);
 
     return (
         <div className={styles.preview}>
@@ -26,8 +29,8 @@ export const Preview: React.FC = () => {
                 <canvas style={{height: "100%"}} ref={canvasRef}/>
             </div>
             <div className={styles.buttons}>
-                <button onClick={() => renderer?.play()}>Play</button>
-                <button onClick={() => renderer?.pause()}>Pause</button>
+                <button onClick={() => props.renderer.play()}>Play</button>
+                <button onClick={() => props.renderer.pause()}>Pause</button>
             </div>
         </div>
     )

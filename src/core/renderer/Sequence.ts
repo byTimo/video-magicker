@@ -18,13 +18,14 @@ export class Sequence {
     public front: SequenceNode | null = null;
     public tail: SequenceNode | null = null;
 
-    private activeTime: number = 0;
-    private activeNode: SequenceNode | null = null;
+    public prevTimestamp: number = 0;
+    private prevNode: SequenceNode | null = null;
 
     public add = (fragment: Fragment): void => {
         if (this.front == null) {
             this.front = new SequenceNode(fragment);
             this.tail = this.front;
+            this.prevNode = this.front;
         } else {
             const node = new SequenceNode(fragment, this.tail);
             this.tail!.next = node;
@@ -32,41 +33,31 @@ export class Sequence {
         }
     }
 
-    public setTime = (time: number): boolean => {
-        if (this.activeNode == null) {
-            this.activeNode = this.researchActiveNode(time);
-            this.activeTime = this.activeNode != null ? time : 0;
-            return this.activeNode != null;
+    public draw = (gl: WebGL2RenderingContext, timestamp: number): boolean => {
+        if (this.prevNode == null) {
+            console.warn("Drawing sequence is empty");
+            return false;
         }
-        let direction: "next" | "prev" = time - this.activeTime > 0 ? "next" : "prev";
-        for (let current = this.activeNode; current != null; current = current[direction]!) {
-            if (current.from <= time && current.to > time) {
-                this.activeNode = current;
-                this.activeTime = time;
+
+        let direction: "next" | "prev" = timestamp - this.prevTimestamp > 0 ? "next" : "prev";
+        for (let current = this.prevNode; current != null; current = current[direction]!) {
+            if (current.from <= timestamp && current.to > timestamp) {
+                const local = timestamp - current.from;
+                current.fragment.source.draw(gl, local);
+                this.prevNode = current;
+                this.prevTimestamp = timestamp;
                 return true;
             }
         }
 
-        this.activeNode = null;
-        this.activeTime = 0;
         return false;
     }
 
-    public draw = (gl: WebGL2RenderingContext): void => {
-        if (this.activeNode == null) {
-            this.activeNode = this.researchActiveNode(this.activeTime);
+    public map = <R>(mapper: (x: SequenceNode, i: number) => R): R[] => {
+        const result: R[] = [];
+        for (let current = this.front, i = 0; current != null; current = current.next, i++) {
+            result.push(mapper(current, i));
         }
-
-        const local = this.activeTime - (this.activeNode?.from ?? 0);
-        this.activeNode?.fragment.source.draw(gl, local);
-    }
-
-    private researchActiveNode = (time: number): SequenceNode | null => {
-        for (let current = this.front; current != null; current = current!.next) {
-            if (current.from <= time && current.to > time) {
-                return current;
-            }
-        }
-        return null;
+        return result;
     }
 }
