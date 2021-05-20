@@ -7,9 +7,10 @@ import {AddSource} from "./Source/UploadSource/AddSource";
 import {Source} from "../../core/sources/Source";
 import {Renderer} from "../../core/renderer/Renderer";
 import {Fragment} from "../../core/renderer/Fragment";
+import {ColorSource} from "../../core/sources/ColorSource";
 
 export const EditorPage: React.FC = () => {
-    const [sources, setSources] = React.useState<Source[]>([]);
+    const [sources, setSources] = React.useState<Source[]>([new ColorSource("red", 255, 0, 0)]);
     const renderer = React.useMemo(() => new Renderer(), []);
 
     const handleAddFragment = (source: Source) => {

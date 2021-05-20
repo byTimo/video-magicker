@@ -28,7 +28,7 @@ export const FileUpload: React.FC<FileUploadProps> = props => {
                 ref={ref}
                 type="file"
                 onChange={handleChange}
-            ></input>
+            />
         </div>
     )
 }

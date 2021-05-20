@@ -1,65 +1,45 @@
-import { getBoundedValue } from '../utils';
-type SourceState = "awaiting" | "stop" | "error";
+import {getBoundedValue} from '../utils';
+import {Source} from "./Source";
+import createRegl, {DefaultContext, DrawCommand, Texture2D} from "regl";
+import vert from "../glsl/texture2d.vert";
+import frag from "../glsl/texture2d.frag";
 
+interface ImageCommandProps {
+    texture: Texture2D;
+}
 
-export class VideoSource {
-    private loading: Promise<void>;
+export class VideoSource implements Source {
+    private command: DrawCommand<DefaultContext, ImageCommandProps> | null = null;
+    private texture: Texture2D | null = null;
 
-    public readonly source: HTMLVideoElement;
-    public readonly filename: string;
-    public readonly type: string;
-    public readonly size: number;
-    public state: SourceState = "awaiting";
+    constructor(public id: string, public name: string, private video: HTMLVideoElement) {
+    }
 
-    constructor(file: File) {
-        const url = URL.createObjectURL(file);
-        this.filename = file.name;
-        this.type = file.type;
-        this.size = file.size;
-        this.source = document.createElement("video");
-        this.source.src = url;
-
-
-        this.loading = new Promise((resolve, reject) => {
-            this.source.addEventListener(
-                "canplaythrough",
-                () => {
-                    this.state = "stop";
-                    resolve();
+    draw(gl: WebGL2RenderingContext, timestamp: number): void {
+        console.log(timestamp, this.video.duration, this.video.currentTime);
+        if (this.command == null || this.texture == null) {
+            const regl = createRegl(gl);
+            this.texture = regl.texture({
+                data: this.video,
+            });
+            this.command = regl({
+                vert,
+                frag,
+                attributes: {
+                    "a_position": [[-1, -1], [-1, 1], [1, -1], [1, 1]],
+                    "a_texturePosition": [[0, 0], [0, -1], [1, 0], [1, -1]],
                 },
-                { once: true }
-            );
-
-            this.source.addEventListener(
-                "error",
-                e => {
-                    this.state = "error";
-                    reject(e);
+                uniforms: {
+                    "u_texture": regl.prop<ImageCommandProps, "texture">("texture"),
                 },
-                { once: true }
-            )
-        })
-    }
-
-    public get awaiter(): Promise<void> {
-        return this.awaiter;
-    }
-
-    public get duration(): number {
-        return this.source.duration;
-    }
-
-    public seek(value: number) {
-        if (this.state === "awaiting" || this.state === "error") {
-            return;
+                count: 4,
+                primitive: "triangle strip",
+            });
         }
-        this.source.currentTime = getBoundedValue(value, this.duration);
-    }
-
-    public get data() {
-        if (this.state == "awaiting" || this.state === "error") {
-            return null;
-        }
-        return this.source;
+        this.video.currentTime = getBoundedValue(timestamp / 1000, this.video.duration);
+        this.texture(this.video)
+        this.command({
+            texture: this.texture,
+        });
     }
 }

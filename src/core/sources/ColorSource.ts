@@ -25,12 +25,13 @@ export class ColorSource implements Source {
                 vert,
                 frag,
                 attributes: {
-                    "a_position": [[1.0, 1.0], [0.0, 1.0], [1.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.0, 0.0]]
+                    "a_position": [[1, 1], [-1, 1], [1, -1], [-1, -1]],
                 },
                 uniforms: {
                     "u_color": regl.prop<ColorCommandProps, "color">("color")
                 },
-                count: 6,
+                count: 4,
+                primitive: "triangle strip",
             })
         }
         this.command({
